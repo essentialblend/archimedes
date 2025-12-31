@@ -29,5 +29,3 @@ packages/
 # OS cruft
 .DS_Store
 Thumbs.db
-
-MainWindow.xaml

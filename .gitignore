@@ -1,0 +1,33 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa]nyCPU/
+[Bb]uild/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+
+# Logs / diagnostics
+*.log
+TestResults/
+
+# NuGet (legacy)
+packages/
+*.nupkg
+*.snupkg
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+MainWindow.xaml

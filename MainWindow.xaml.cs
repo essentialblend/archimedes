@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 
 namespace archimedes
@@ -13,38 +12,31 @@ namespace archimedes
 
         private void OnToggleTheme(object sender, RoutedEventArgs e)
         {
-            var app = Application.Current;
-            if (app == null) return;
-
-            var merged = app.Resources.MergedDictionaries;
+            var merged = Application.Current?.Resources?.MergedDictionaries;
+            if (merged == null) return;
 
             int idx = -1;
-            bool currentlyDark = false;
+            string current = "";
 
             for (int i = 0; i < merged.Count; i++)
             {
-                var src = merged[i].Source?.ToString() ?? "";
-                if (src.Contains("/themes/", StringComparison.OrdinalIgnoreCase) &&
-                    (src.EndsWith("dark.xaml", StringComparison.OrdinalIgnoreCase) ||
-                     src.EndsWith("light.xaml", StringComparison.OrdinalIgnoreCase)))
+                var src = merged[i].Source?.OriginalString?.Replace('\\', '/') ?? "";
+                if (src.Contains("Themes/", StringComparison.OrdinalIgnoreCase) &&
+                    (src.EndsWith("Light.xaml", StringComparison.OrdinalIgnoreCase) ||
+                     src.EndsWith("Dark.xaml", StringComparison.OrdinalIgnoreCase)))
                 {
                     idx = i;
-                    currentlyDark = src.EndsWith("dark.xaml", StringComparison.OrdinalIgnoreCase);
+                    current = src;
                     break;
                 }
             }
 
-            var next = new ResourceDictionary
-            {
-                Source = new Uri(
-                    currentlyDark
-                        ? "pack://application:,,,/themes/Light.xaml"
-                        : "pack://application:,,,/themes/Dark.xaml",
-                    UriKind.Absolute)
-            };
+            if (idx < 0) return;
 
-            if (idx >= 0) merged[idx] = next;
-            else merged.Add(next);
+            bool currentlyDark = current.EndsWith("Dark.xaml", StringComparison.OrdinalIgnoreCase);
+            var next = new Uri(currentlyDark ? "Themes/Light.xaml" : "Themes/Dark.xaml", UriKind.Relative);
+
+            merged[idx].Source = next;
         }
 
         private void OnBootTidal(object sender, RoutedEventArgs e)

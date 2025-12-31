@@ -8,6 +8,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Light.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="Font.UIFamily">Segoe UI Variable Text</FontFamily>
+
+            <Style TargetType="{x:Type Window}">
+                <Setter Property="FontFamily" Value="{DynamicResource Font.UIFamily}"/>
+            </Style>
         </ResourceDictionary>         
     </Application.Resources>
 </Application>

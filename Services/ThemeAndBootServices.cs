@@ -1,48 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using System;
-using System.Linq;
 using System.Windows;
 
 namespace archimedes
 {
-    // Contract: anything that can “boot” Tidal (placeholder today).
     public interface IBootTidalAction
     {
         void Boot();
     }
 
-    // Implementation: toggles between Themes/Light.xaml and Themes/Dark.xaml
     public sealed class ResourceDictionaryThemeToggler : IThemeToggler
     {
         public void ToggleTheme()
         {
-            // Grab the merged dictionaries from App.xaml (you merge one theme dictionary there).
-            var merged = Application.Current.Resources.MergedDictionaries;
+            var app = Application.Current;
+            if (app is null) return;
 
-            // Find the first merged dictionary whose Source contains "Themes/".
-            var themeDict = merged.FirstOrDefault(d =>
-                d.Source?.OriginalString.Replace('\\', '/').Contains("Themes/") == true);
+            var merged = app.Resources.MergedDictionaries;
 
-            // If we can’t find it, do nothing (safe no-op).
-            if (themeDict?.Source == null) return;
+            int idx = -1;
+            string current = "";
 
-            // Normalize path separators for reliable string checks.
-            var current = themeDict.Source.OriginalString.Replace('\\', '/');
+            for (int i = 0; i < merged.Count; i++)
+            {
+                var src = merged[i].Source?.OriginalString ?? "";
+                src = src.Replace('\\', '/');
 
-            // Switch to the other theme based on the current theme file name.
+                if (src.EndsWith("Themes/Light.xaml", StringComparison.OrdinalIgnoreCase) ||
+                    src.EndsWith("Themes/Dark.xaml", StringComparison.OrdinalIgnoreCase))
+                {
+                    idx = i;
+                    current = src;
+                    break;
+                }
+            }
+
+            if (idx < 0) return;
+
             var next = current.EndsWith("Themes/Light.xaml", StringComparison.OrdinalIgnoreCase)
                 ? "Themes/Dark.xaml"
                 : "Themes/Light.xaml";
 
-            // Replace the Source; WPF will re-resolve DynamicResource bindings.
-            themeDict.Source = new Uri(next, UriKind.Relative);
+            merged[idx] = new ResourceDictionary
+            {
+                Source = new Uri(next, UriKind.Relative)
+            };
         }
     }
 
-    // Implementation: placeholder boot action (no external process assumptions yet).
     public sealed class PlaceholderBootTidalAction : IBootTidalAction
     {
         public void Boot()

@@ -1,0 +1,98 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Style x:Key="ZoneLabel" TargetType="TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="FontSize" Value="9"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+  </Style>
+
+  <Style x:Key="TinyButton" TargetType="Button">
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="MinWidth" Value="22"/>
+    <Setter Property="Padding" Value="8,0"/>
+    <Setter Property="FontSize" Value="9"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+  </Style>
+
+  <Style x:Key="CycleButton" TargetType="Button">
+    <Setter Property="Width" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.CycleBtn.BG}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Acc.Main}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ValueBox" TargetType="Border">
+    <Setter Property="Width" Value="44"/>
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Input.BG}"/>
+    <Setter Property="CornerRadius" Value="2"/>
+    <Setter Property="Padding" Value="6,0"/>
+  </Style>
+
+  <Style x:Key="ValueMono" TargetType="TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="TextAlignment" Value="Right"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+  </Style>
+
+  <Style x:Key="SigInput" TargetType="TextBox">
+    <Setter Property="Width" Value="20"/>
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Input.BG}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="TextAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text.Main}"/>
+  </Style>
+
+  <Style x:Key="IconButton" TargetType="Button">
+    <Setter Property="Width" Value="22"/>
+    <Setter Property="Height" Value="22"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Bd" CornerRadius="3" Background="{TemplateBinding Background}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,208 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Style x:Key="TransportSep" TargetType="Border">
+    <Setter Property="Width" Value="1"/>
+    <Setter Property="Height" Value="16"/>
+    <Setter Property="Margin" Value="16,0"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Border.Light}"/>
+  </Style>
+
+  <Style x:Key="MetroToggle" TargetType="ToggleButton">
+    <Setter Property="Width" Value="30"/>
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <Ellipse Width="5" Height="5" Stroke="{DynamicResource Brush.Acc.Main}" StrokeThickness="1" Opacity="1"/>
+              <Ellipse Width="5" Height="5" Stroke="{DynamicResource Brush.Acc.Main}" StrokeThickness="1" Opacity="1" Margin="3,0,0,0"/>
+            </StackPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Acc.Main}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.CycleBtn.BG}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="DeckBorder" TargetType="Border">
+    <Setter Property="Height" Value="28"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.BG.Body}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style x:Key="DeckSep" TargetType="Border">
+    <Setter Property="Width" Value="1"/>
+    <Setter Property="Height" Value="14"/>
+    <Setter Property="Margin" Value="4,0"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Border.Light}"/>
+  </Style>
+
+  <Style x:Key="DeckButton" TargetType="Button">
+    <Setter Property="Width" Value="36"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="3">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="DeckButtonHush" TargetType="Button" BasedOn="{StaticResource DeckButton}">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Red}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="ScaleComboItem" TargetType="ComboBoxItem">
+    <Setter Property="Padding" Value="8,2"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBoxItem">
+          <Border x:Name="ItemBd" Background="{TemplateBinding Background}" CornerRadius="2">
+            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+              <Setter TargetName="ItemBd" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="ItemBd" Property="Background" Value="{DynamicResource Brush.CycleBtn.BG}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ScaleCombo" TargetType="ComboBox">
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="MinWidth" Value="48"/>
+    <Setter Property="Padding" Value="8,0"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Input.BG}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="ItemContainerStyle" Value="{StaticResource ScaleComboItem}"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid>
+            <ToggleButton x:Name="Toggle" Focusable="False" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+              <ToggleButton.Template>
+                <ControlTemplate TargetType="ToggleButton">
+                  <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="18"/>
+                      </Grid.ColumnDefinitions>
+                      <ContentPresenter Grid.Column="0" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{Binding SelectionBoxItem, RelativeSource={RelativeSource AncestorType=ComboBox}}" ContentTemplate="{Binding SelectionBoxItemTemplate, RelativeSource={RelativeSource AncestorType=ComboBox}}" ContentTemplateSelector="{Binding ItemTemplateSelector, RelativeSource={RelativeSource AncestorType=ComboBox}}" TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ComboBox}}"/>
+                      <Path Grid.Column="1" Width="8" Height="4" Margin="0,0,6,0" VerticalAlignment="Center" HorizontalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{DynamicResource Brush.Text.Dim}"/>
+                    </Grid>
+                  </Border>
+                </ControlTemplate>
+              </ToggleButton.Template>
+            </ToggleButton>
+
+            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+              <Border x:Name="DropDownBorder" MinWidth="{TemplateBinding ActualWidth}" Background="{DynamicResource Brush.BG.Menu}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Padding="2">
+                <ScrollViewer Margin="0" CanContentScroll="True">
+                  <ItemsPresenter/>
+                </ScrollViewer>
+              </Border>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Toggle" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsDropDownOpen" Value="True">
+              <Setter TargetName="Toggle" Property="Background" Value="{DynamicResource Brush.BG.Active}"/>
+              <Setter TargetName="Toggle" Property="BorderBrush" Value="{DynamicResource Brush.Acc.Main}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="RightSep" TargetType="Border">
+    <Setter Property="Width" Value="1"/>
+    <Setter Property="Height" Value="16"/>
+    <Setter Property="Margin" Value="20,0"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Border.Light}"/>
+  </Style>
+
+  <Style x:Key="CycleWrapValBox" TargetType="Border">
+    <Setter Property="MinWidth" Value="80"/>
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="3"/>
+    <Setter Property="Padding" Value="6,0"/>
+  </Style>
+
+  <Style x:Key="CycleWrapValText" TargetType="TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+    <Setter Property="TextAlignment" Value="Right"/>
+  </Style>
+
+  <Style x:Key="DSPBox" TargetType="Border">
+    <Setter Property="Width" Value="90"/>
+    <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
+    <Setter Property="CornerRadius" Value="3"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style x:Key="DSPFill" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource Brush.Acc.Green}"/>
+  </Style>
+
+</ResourceDictionary>

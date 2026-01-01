@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Geometry x:Key="Icon.CycleCollapse">M4,14 H10 V20 M20,10 H14 V4</Geometry>
+  <Geometry x:Key="Icon.CyclePhaseHourglass">M6,4 L18,4 L12,11 L18,20 L6,20 L12,11 Z</Geometry>
+  <Geometry x:Key="Icon.DeckPlay">M6,5 V19 L18,12 Z</Geometry>
+  <Geometry x:Key="Icon.DeckResetDiamond">M12,3 L20,12 L12,21 L4,12 Z</Geometry>
+  <Geometry x:Key="Icon.DeckHushFill">M5,5 H9 V19 H5 Z M15,5 H19 V19 H15 Z</Geometry>
+  <Geometry x:Key="Icon.DeckHushSlash">M4,4 L20,20</Geometry>
+  <Geometry x:Key="Icon.ThemeMoon">M21,12.79 A9,9 0 1 1 11.21,3 A7,7 0 0 0 21,12.79 Z</Geometry>
+
+</ResourceDictionary>

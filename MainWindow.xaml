@@ -19,7 +19,7 @@
 
     <!-- ROW 1: WORKSPACE -->
     <Border Grid.Row="1" Background="{DynamicResource Brush.BG.Panel}">
-      <TextBlock Text="EDITOR AREA (next)" Foreground="{DynamicResource Brush.Text.Dim}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+      <views:CodeEditor x:Name="CodeEditor"/>
     </Border>
   </Grid>
 </Window>

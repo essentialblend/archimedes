@@ -10,6 +10,8 @@ namespace archimedes
 
   public sealed class ResourceDictionaryThemeToggler : IThemeToggler
   {
+    public static event EventHandler? ThemeChanged;
+
     public void ToggleTheme()
     {
       var app = Application.Current;
@@ -41,6 +43,8 @@ namespace archimedes
       var next = new Uri(currentlyDark ? "Themes/Light.xaml" : "Themes/Dark.xaml", UriKind.Relative);
 
       merged[idx].Source = next;
+
+      ThemeChanged?.Invoke(this, EventArgs.Empty);
     }
   }
 

@@ -2,39 +2,91 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-    <!-- Dimensions -->
-    <GridLength x:Key="Dim.BarHeight">42</GridLength>
-    <GridLength x:Key="Dim.StatusHeight">42</GridLength>
-    <sys:Double x:Key="Dim.WidgetHeight">22</sys:Double>
+  <!-- Dimensions -->
+  <GridLength x:Key="Dim.BarHeight">42</GridLength>
+  <GridLength x:Key="Dim.StatusHeight">42</GridLength>
+  <sys:Double x:Key="Dim.WidgetHeight">22</sys:Double>
 
-    <!-- Backgrounds -->
-    <SolidColorBrush x:Key="Brush.BG.Body"    Color="#E5E5E5"/>
-    <SolidColorBrush x:Key="Brush.BG.Bar"     Color="#F0F0F0"/>
-    <SolidColorBrush x:Key="Brush.BG.Panel"   Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="Brush.BG.Hover"   Color="#E0E0E0"/>
-    <SolidColorBrush x:Key="Brush.BG.Active"  Color="#CCCCCC"/>
-    <SolidColorBrush x:Key="Brush.BG.Menu"    Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="Brush.BG.Console" Color="#F9FAFB"/>
+  <!-- Backgrounds -->
+  <SolidColorBrush x:Key="Brush.BG.Body"    Color="#E5E5E5"/>
+  <SolidColorBrush x:Key="Brush.BG.Bar"     Color="#F0F0F0"/>
+  <SolidColorBrush x:Key="Brush.BG.Panel"   Color="#FFFFFF"/>
+  <SolidColorBrush x:Key="Brush.BG.Hover"   Color="#E0E0E0"/>
+  <SolidColorBrush x:Key="Brush.BG.Active"  Color="#CCCCCC"/>
+  <SolidColorBrush x:Key="Brush.BG.Menu"    Color="#FFFFFF"/>
+  <SolidColorBrush x:Key="Brush.BG.Console" Color="#F9FAFB"/>
 
-    <!-- Borders -->
-    <SolidColorBrush x:Key="Brush.Border"       Color="#000000"/>
-    <SolidColorBrush x:Key="Brush.Border.Light" Color="#D4D4D8"/>
+  <!-- Editor palette (Light) -->
+  <SolidColorBrush x:Key="Brush.Editor.BG" Color="#F6F6F6"/>
+  <SolidColorBrush x:Key="Brush.Editor.FG" Color="#1E1E1E"/>
+  <SolidColorBrush x:Key="Brush.Editor.Gutter.FG" Color="#7A7A7A"/>
 
-    <!-- Text -->
-    <SolidColorBrush x:Key="Brush.Text.Main"   Color="#000000"/>
-    <SolidColorBrush x:Key="Brush.Text.Dim"    Color="#404040"/>
-    <SolidColorBrush x:Key="Brush.Text.Accent" Color="#000000"/>
+  <SolidColorBrush x:Key="Brush.Editor.Selection" Color="#22000000"/>
+  <SolidColorBrush x:Key="Brush.Editor.SelectionFG" Color="#1E1E1E"/>
+  <SolidColorBrush x:Key="Brush.Editor.CurrentLine" Color="#03000000"/>
+  <SolidColorBrush x:Key="Brush.Editor.Caret" Color="#1E1E1E"/>
+  
+  <SolidColorBrush x:Key="Brush.Editor.CurrentLineBorder" Color="#16000000"/>
+  <Pen x:Key="Pen.Editor.CurrentLineBorder" Brush="{DynamicResource Brush.Editor.CurrentLineBorder}" Thickness="1"/>
 
-    <!-- Accents -->
-    <SolidColorBrush x:Key="Brush.Acc.Main"  Color="#4F46E5"/>
-    <SolidColorBrush x:Key="Brush.Acc.Green" Color="#10B981"/>
-    <SolidColorBrush x:Key="Brush.Acc.Red"   Color="#EF4444"/>
-    <SolidColorBrush x:Key="Brush.Acc.Flash" Color="#000000"/>
 
-    <SolidColorBrush x:Key="Brush.CycleBtn.BG" Color="#144F46E5"/>
+  <!-- Borders -->
+  <SolidColorBrush x:Key="Brush.Border"       Color="#000000"/>
+  <SolidColorBrush x:Key="Brush.Border.Light" Color="#D4D4D8"/>
 
-    <!-- Inputs -->
-    <SolidColorBrush x:Key="Brush.Input.BG"      Color="#0A000000"/>
-    <SolidColorBrush x:Key="Brush.Input.BGHover" Color="#14000000"/>
+  <!-- Text -->
+  <SolidColorBrush x:Key="Brush.Text.Main"   Color="#000000"/>
+  <SolidColorBrush x:Key="Brush.Text.Dim"    Color="#404040"/>
+  <SolidColorBrush x:Key="Brush.Text.Accent" Color="#000000"/>
+
+  <!-- Accents -->
+  <SolidColorBrush x:Key="Brush.Acc.Main"  Color="#4F46E5"/>
+  <SolidColorBrush x:Key="Brush.Acc.Green" Color="#10B981"/>
+  <SolidColorBrush x:Key="Brush.Acc.Yellow" Color="#E5C14F"/>
+  <SolidColorBrush x:Key="Brush.Acc.Red"   Color="#EF4444"/>
+  <SolidColorBrush x:Key="Brush.Acc.Flash" Color="#000000"/>
+
+  <SolidColorBrush x:Key="Brush.CycleBtn.BG" Color="#144F46E5"/>
+
+  <!-- Inputs -->
+  <SolidColorBrush x:Key="Brush.Input.BG"      Color="#0A000000"/>
+  <SolidColorBrush x:Key="Brush.Input.BGHover" Color="#14000000"/>
+
+  <!-- Theme Toggle Icon (Light) -->
+  <DataTemplate x:Key="ThemeToggleIconTemplate">
+    <Viewbox Width="18" Height="18" Stretch="Uniform">
+      <Canvas Width="24" Height="24">
+        <Ellipse Width="6" Height="6" Canvas.Left="9" Canvas.Top="9" StrokeThickness="0"
+                 Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+        <Line X1="12" Y1="2" X2="12" Y2="6"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="12" Y1="18" X2="12" Y2="22"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="2" Y1="12" X2="6" Y2="12"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="18" Y1="12" X2="22" Y2="12"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="4.9" Y1="4.9" X2="7.7" Y2="7.7"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="16.3" Y1="16.3" X2="19.1" Y2="19.1"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="4.9" Y1="19.1" X2="7.7" Y2="16.3"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Line X1="16.3" Y1="7.7" X2="19.1" Y2="4.9"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+              StrokeThickness="1.5"/>
+        <Ellipse Width="20" Height="20" Canvas.Left="2" Canvas.Top="2"
+                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                 StrokeThickness="1.5" StrokeDashArray="1 4"/>
+      </Canvas>
+    </Viewbox>
+  </DataTemplate>
 
 </ResourceDictionary>

@@ -26,20 +26,54 @@
 
       <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
 
-        <Button Style="{StaticResource TinyButton}" Content="EXT"/>
-        <Button Style="{StaticResource TinyButton}" Content="TAP" Margin="6,0,0,0"/>
+        <Button Style="{StaticResource TinyButton}">
+          <Viewbox Width="14" Height="14" Stretch="Uniform">
+            <Canvas Width="24" Height="24">
+              <Path Data="M4 20H20V4H4" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" StrokeLineJoin="Miter" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+              <Line X1="4" Y1="12" X2="20" Y2="12" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+            </Canvas>
+          </Viewbox>
+        </Button>
+        <Button Style="{StaticResource TinyButton}" Margin="6,0,0,0">
+          <Viewbox Width="14" Height="14" Stretch="Uniform">
+            <Canvas Width="24" Height="24">
+              <Path Data="M12 4V20" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" StrokeLineJoin="Miter" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+              <Path Data="M4 12L12 8L20 12" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" StrokeLineJoin="Miter" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+            </Canvas>
+          </Viewbox>
+        </Button>
 
         <Border Style="{StaticResource TransportSep}"/>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <TextBlock Style="{StaticResource ZoneLabel}" Text="BPM" Margin="0,0,4,0"/>
           <Border Style="{StaticResource ValueBox}">
             <TextBlock Style="{StaticResource ValueMono}" Text="135"/>
           </Border>
 
-          <TextBlock Style="{StaticResource ZoneLabel}" Text="CPS" Margin="10,0,4,0"/>
+          <Viewbox Width="20" Height="20" Stretch="Uniform" Margin="8,0" VerticalAlignment="Center">
+            <Canvas Width="24" Height="24">
+              <Ellipse Width="10" Height="10" Canvas.Left="3" Canvas.Top="7" Stroke="{DynamicResource Brush.Text.Dim}" StrokeThickness="1.5"/>
+              <Ellipse Width="10" Height="10" Canvas.Left="11" Canvas.Top="7" Stroke="{DynamicResource Brush.Text.Dim}" StrokeThickness="1.5"/>
+              <Ellipse Width="3" Height="3" Canvas.Left="10.5" Canvas.Top="10.5" Fill="{DynamicResource Brush.Text.Dim}"/>
+            </Canvas>
+          </Viewbox>
+
           <Border Style="{StaticResource ValueBox}">
             <TextBlock Style="{StaticResource ValueMono}" Text="0.56"/>
+          </Border>
+
+          <Viewbox Width="18" Height="18" Stretch="Uniform" Margin="8,0" VerticalAlignment="Center">
+            <Canvas Width="24" Height="24">
+              <Path Data="M12,2 L17,7 H14 V17 H17 L12,22 L7,17 H10 V7 H7 Z" Stroke="{DynamicResource Brush.Text.Dim}" StrokeThickness="1.5" StrokeLineJoin="Miter" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                <Path.RenderTransform>
+                  <RotateTransform Angle="90" CenterX="12" CenterY="12"/>
+                </Path.RenderTransform>
+              </Path>
+            </Canvas>
+          </Viewbox>
+
+          <Border Style="{StaticResource CycleWrapValBox}">
+            <TextBlock Style="{StaticResource CycleWrapValText}" Text="0.0"/>
           </Border>
         </StackPanel>
 
@@ -127,20 +161,6 @@
       </Border>
 
       <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <Viewbox Width="15" Height="15" Margin="0,0,6,0" Stretch="Uniform" VerticalAlignment="Center">
-            <Canvas Width="24" Height="24">
-              <Path Data="{StaticResource Icon.CyclePhaseHourglass}" Stroke="{DynamicResource Brush.Text.Dim}" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent"/>
-            </Canvas>
-          </Viewbox>
-
-          <Border Style="{StaticResource CycleWrapValBox}">
-            <TextBlock Style="{StaticResource CycleWrapValText}" Text="0.0"/>
-          </Border>
-        </StackPanel>
-
-        <Border Style="{StaticResource RightSep}"/>
-
         <Border Style="{StaticResource DSPBox}">
           <Grid ClipToBounds="True">
             <Grid.ColumnDefinitions>
@@ -153,15 +173,11 @@
 
         <Border Style="{StaticResource RightSep}"/>
 
-        <Button Style="{StaticResource IconButton}" Click="OnBootTidal" ToolTip="Turn Tidal Cycles On" Margin="0,0,20,0">
+        <Button Style="{StaticResource IconButton}" Click="OnBootTidal" ToolTip="Turn Tidal Cycles On" Margin="0,0,24,0">
           <Image Width="18" Height="18" Stretch="Uniform" Source="/Assets/Logo.png"/>
         </Button>
 
-        <Button Style="{StaticResource IconButton}" Click="OnToggleTheme" ToolTip="Toggle Theme">
-          <Viewbox Width="14" Height="14">
-            <Path Data="{StaticResource Icon.ThemeMoon}" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
-          </Viewbox>
-        </Button>
+        <Button Style="{StaticResource IconButton}" Click="OnToggleTheme" ToolTip="Toggle Theme" Content="." ContentTemplate="{DynamicResource ThemeToggleIconTemplate}"/>
       </StackPanel>
     </Grid>
   </Border>

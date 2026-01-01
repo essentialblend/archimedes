@@ -29,3 +29,5 @@ packages/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+codex-images

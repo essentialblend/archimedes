@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="archimedes.Views.CodeEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:editing="clr-namespace:ICSharpCode.AvalonEdit.Editing;assembly=ICSharpCode.AvalonEdit"
+             xmlns:rendering="clr-namespace:ICSharpCode.AvalonEdit.Rendering;assembly=ICSharpCode.AvalonEdit">
+
+  <UserControl.Resources>
+    <Style TargetType="{x:Type editing:TextArea}">
+      <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Editor.Selection}"/>
+      <Setter Property="SelectionForeground" Value="{DynamicResource Brush.Editor.SelectionFG}"/>
+    </Style>
+
+    <Style TargetType="{x:Type rendering:TextView}">
+      <Setter Property="CurrentLineBorder" Value="{DynamicResource Pen.Editor.CurrentLineBorder}"/>
+      <Setter Property="CurrentLineBackground" Value="{DynamicResource Brush.Editor.CurrentLine}"/>
+    </Style>
+  </UserControl.Resources>
+
+  <Grid Background="{DynamicResource Brush.Editor.BG}">
+    <avalonedit:TextEditor x:Name="Editor"
+                           Loaded="OnEditorLoaded"
+                           FontFamily="Cascadia Mono"
+                           FontSize="13"
+                           ShowLineNumbers="True"
+                           Background="{DynamicResource Brush.Editor.BG}"
+                           Foreground="{DynamicResource Brush.Editor.FG}"
+                           LineNumbersForeground="{DynamicResource Brush.Editor.Gutter.FG}"
+                           Padding="12"
+                           HorizontalScrollBarVisibility="Auto"
+                           VerticalScrollBarVisibility="Auto">
+      <avalonedit:TextEditor.Options>
+        <avalonedit:TextEditorOptions HighlightCurrentLine="True" AllowScrollBelowDocument="True"/>
+      </avalonedit:TextEditor.Options>
+    </avalonedit:TextEditor>
+  </Grid>
+</UserControl>

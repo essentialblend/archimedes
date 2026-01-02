@@ -95,4 +95,315 @@
     </Setter>
   </Style>
 
+  <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition Width="20" />
+      </Grid.ColumnDefinitions>
+
+      <Border x:Name="Border" 
+              Grid.ColumnSpan="2"
+              Background="{DynamicResource Brush.Input.BG}"
+              BorderBrush="{DynamicResource Brush.Border.Light}"
+              BorderThickness="1"/>
+
+      <Path x:Name="Arrow" 
+            Grid.Column="1" 
+            Fill="{TemplateBinding Foreground}"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"
+            Data="M0,0 L4,4 L8,0"
+            Opacity="0.7"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="true">
+        <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.Input.BGHover}"/>
+        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Brush.Text.Dim}"/>
+        <Setter TargetName="Arrow" Property="Opacity" Value="1"/>
+      </Trigger>
+      <Trigger Property="IsChecked" Value="true">
+        <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.BG.Active}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <Style x:Key="DarkComboBoxItemStyle" TargetType="ComboBoxItem">
+    <Setter Property="Background" Value="{DynamicResource Brush.BG.Menu}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBoxItem">
+          <Border x:Name="Bd" 
+                  Background="{TemplateBinding Background}" 
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.BG.Active}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="BoxedComboBoxStyle" TargetType="ComboBox">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="6,0,0,0"/>
+    <Setter Property="ItemContainerStyle" Value="{StaticResource DarkComboBoxItemStyle}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid>
+            <ToggleButton Name="ToggleButton" 
+                          Template="{StaticResource ComboBoxToggleButton}" 
+                          Grid.Column="2" 
+                          Focusable="false"
+                          IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                          ClickMode="Press"
+                          Foreground="{TemplateBinding Foreground}"/>
+
+            <ContentPresenter Name="ContentSite" 
+                              IsHitTestVisible="False" 
+                              Content="{TemplateBinding SelectionBoxItem}"
+                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                              Margin="{TemplateBinding Padding}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Left" />
+
+            <TextBox x:Name="PART_EditableTextBox"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Focusable="False"
+                     IsHitTestVisible="False"
+                     Margin="{TemplateBinding Padding}"
+                     Foreground="{TemplateBinding Foreground}"
+                     FontFamily="{TemplateBinding FontFamily}"
+                     FontSize="{TemplateBinding FontSize}"
+                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                     Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}}"
+                     VerticalContentAlignment="Center"
+                     Visibility="Hidden"/>
+
+            <Popup Name="Popup"
+                   Placement="Bottom"
+                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                   AllowsTransparency="True" 
+                   Focusable="False"
+                   PopupAnimation="Slide">
+              <Grid Name="DropDown"
+                    MinWidth="{TemplateBinding ActualWidth}"
+                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                <Border x:Name="DropDownBorder" 
+                        Background="{DynamicResource Brush.BG.Menu}"
+                        BorderThickness="1" 
+                        BorderBrush="{DynamicResource Brush.Border.Light}"/>
+                <ScrollViewer Margin="0" SnapsToDevicePixels="True">
+                  <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                </ScrollViewer>
+              </Grid>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEditable" Value="True">
+              <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+              <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="BoxedComboBoxEditableStyle" TargetType="ComboBox">
+    <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Input.BG}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Light}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono"/>
+    <Setter Property="Padding" Value="6,0,0,0"/>
+    <Setter Property="ItemContainerStyle" Value="{StaticResource DarkComboBoxItemStyle}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Border x:Name="Bd"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}">
+            <Grid>
+              <ContentPresenter Name="ContentSite"
+                                IsHitTestVisible="False"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" />
+
+              <TextBox x:Name="PART_EditableTextBox"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Margin="{TemplateBinding Padding}"
+                       Foreground="{TemplateBinding Foreground}"
+                       FontFamily="{TemplateBinding FontFamily}"
+                       FontSize="{TemplateBinding FontSize}"
+                       CaretBrush="{TemplateBinding Foreground}"
+                       IsReadOnly="{TemplateBinding IsReadOnly}"
+                       Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                       VerticalContentAlignment="Center"
+                       Visibility="Hidden"/>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEditable" Value="True">
+              <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+              <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Input.BGHover}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Text.Dim}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Text.Main}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="EditorScrollThumb" TargetType="Thumb">
+    <Setter Property="Background" Value="{DynamicResource Brush.Scrollbar.Thumb}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="ThumbBd"
+                  Background="{TemplateBinding Background}"
+                  CornerRadius="3"
+                  Margin="1"/>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="ThumbBd" Property="Background" Value="{DynamicResource Brush.Scrollbar.ThumbHover}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+              <Setter TargetName="ThumbBd" Property="Background" Value="{DynamicResource Brush.Scrollbar.ThumbHover}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <ControlTemplate x:Key="EditorScrollBarVertical" TargetType="ScrollBar">
+    <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+      <Track x:Name="PART_Track" IsDirectionReversed="True">
+        <Track.DecreaseRepeatButton>
+          <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"/>
+        </Track.DecreaseRepeatButton>
+        <Track.Thumb>
+          <Thumb Style="{StaticResource EditorScrollThumb}"/>
+        </Track.Thumb>
+        <Track.IncreaseRepeatButton>
+          <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"/>
+        </Track.IncreaseRepeatButton>
+      </Track>
+    </Grid>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="EditorScrollBarHorizontal" TargetType="ScrollBar">
+    <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+      <Track x:Name="PART_Track" IsDirectionReversed="False">
+        <Track.DecreaseRepeatButton>
+          <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"/>
+        </Track.DecreaseRepeatButton>
+        <Track.Thumb>
+          <Thumb Style="{StaticResource EditorScrollThumb}"/>
+        </Track.Thumb>
+        <Track.IncreaseRepeatButton>
+          <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"/>
+        </Track.IncreaseRepeatButton>
+      </Track>
+    </Grid>
+  </ControlTemplate>
+
+  <Style TargetType="ScrollBar">
+    <Setter Property="Background" Value="{DynamicResource Brush.Scrollbar.Track}"/>
+    <Setter Property="Template" Value="{StaticResource EditorScrollBarVertical}"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Style.Triggers>
+      <Trigger Property="Orientation" Value="Horizontal">
+        <Setter Property="Template" Value="{StaticResource EditorScrollBarHorizontal}"/>
+        <Setter Property="Height" Value="6"/>
+      </Trigger>
+      <Trigger Property="Orientation" Value="Vertical">
+        <Setter Property="Width" Value="6"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="StripIconToggle" TargetType="ToggleButton">
+    <Setter Property="Width" Value="22"/>
+    <Setter Property="Height" Value="22"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Grid Background="{TemplateBinding Background}">
+            <ContentPresenter x:Name="Icon"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+              <Setter TargetName="Icon" Property="Effect">
+                <Setter.Value>
+                  <DropShadowEffect BlurRadius="10"
+                                    ShadowDepth="0"
+                                    Opacity="0.7"
+                                    Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground.Color}"/>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
 </ResourceDictionary>

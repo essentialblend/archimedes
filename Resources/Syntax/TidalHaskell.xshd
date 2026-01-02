@@ -1,0 +1,47 @@
+﻿<SyntaxDefinition name="Tidal"
+  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+	<Color name="Comment" foreground="#FF6A9955"/>
+	<Color name="String" foreground="#FFD69D85"/>
+	<Color name="Escape" foreground="#FFCE9178"/>
+	<Color name="Number" foreground="#FFB5CEA8"/>
+	<Color name="TidalStream" foreground="#FF4FC1FF"/>
+	<Color name="Operator" foreground="#FFD4D4D4"/>
+	<Color name="Comma" foreground="#FFD4D4D4"/>
+
+	<RuleSet>
+		<Span color="Comment" multiline="false">
+			<Begin>--+(?![!#$%&amp;*+\./&lt;=&gt;?@\\\^|\-~:])</Begin>
+			<End>\n</End>
+		</Span>
+
+		<Span color="Comment" ruleSet="BlockComment" multiline="true">
+			<Begin>\x7B-</Begin>
+			<End>-\x7D</End>
+		</Span>
+
+		<Span color="String" multiline="true">
+			<Begin>&quot;</Begin>
+			<End>&quot;</End>
+			<RuleSet>
+				<Rule color="Escape">\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL|[abfnrtv\\&quot;'&amp;])</Rule>
+				<Rule color="Escape">\\o[0-7]+|\\x[0-9A-Fa-f]+|\\[0-9]+</Rule>
+				<Rule color="Escape">\\\^[A-Z@\[\]\\\^_]</Rule>
+			</RuleSet>
+		</Span>
+
+		<Rule color="Number">\b([0-9]+\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|[0-9]+)\b</Rule>
+
+		<Rule color="TidalStream">\b(d[1-9][0-9]?)\b</Rule>
+
+		<Rule color="Operator">[!#$%&amp;*+\./&lt;=&gt;?@\\\^|\-~:]+</Rule>
+		<Rule color="Comma">,</Rule>
+	</RuleSet>
+
+	<RuleSet name="BlockComment">
+		<Span color="Comment" ruleSet="BlockComment" multiline="true">
+			<Begin>\x7B-</Begin>
+			<End>-\x7D</End>
+		</Span>
+	</RuleSet>
+</SyntaxDefinition>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Services/IThemeToggler.cs
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 

@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:editing="clr-namespace:ICSharpCode.AvalonEdit.Editing;assembly=ICSharpCode.AvalonEdit"
-             xmlns:rendering="clr-namespace:ICSharpCode.AvalonEdit.Rendering;assembly=ICSharpCode.AvalonEdit">
+             xmlns:rendering="clr-namespace:ICSharpCode.AvalonEdit.Rendering;assembly=ICSharpCode.AvalonEdit"
+             xmlns:local="clr-namespace:archimedes.Views">
 
   <UserControl.Resources>
     <Style TargetType="{x:Type editing:TextArea}">
@@ -18,7 +19,13 @@
   </UserControl.Resources>
 
   <Grid Background="{DynamicResource Brush.Editor.BG}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="{DynamicResource Dim.StatusHeight}"/>
+    </Grid.RowDefinitions>
+
     <avalonedit:TextEditor x:Name="Editor"
+                           Grid.Row="0"
                            Loaded="OnEditorLoaded"
                            FontFamily="Cascadia Mono"
                            FontSize="13"
@@ -28,10 +35,129 @@
                            LineNumbersForeground="{DynamicResource Brush.Editor.Gutter.FG}"
                            Padding="12"
                            HorizontalScrollBarVisibility="Auto"
-                           VerticalScrollBarVisibility="Auto">
+                          VerticalScrollBarVisibility="Auto">
       <avalonedit:TextEditor.Options>
-        <avalonedit:TextEditorOptions HighlightCurrentLine="True" AllowScrollBelowDocument="True"/>
+        <avalonedit:TextEditorOptions HighlightCurrentLine="True"
+                                      AllowScrollBelowDocument="True"/>
       </avalonedit:TextEditor.Options>
     </avalonedit:TextEditor>
+
+    <local:WrapIndicatorOverlay x:Name="WrapIndicator"
+                                Grid.Row="0"
+                                IsHitTestVisible="False"
+                                Panel.ZIndex="1"/>
+
+    <Border Grid.Row="1"
+            Background="{DynamicResource Brush.BG.Bar}"
+            BorderBrush="{DynamicResource Brush.Border}"
+            BorderThickness="0,1,0,0">
+
+      <Grid VerticalAlignment="Center" Margin="12,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+
+          <ComboBox x:Name="ZoomBox"
+                    Width="75"
+                    Height="22"
+                    Style="{DynamicResource BoxedComboBoxStyle}"
+                    SelectedIndex="3"
+                    IsEditable="True"
+                    IsReadOnly="True"
+                    VerticalAlignment="Center">
+            <ComboBoxItem Content="50%"/>
+            <ComboBoxItem Content="75%"/>
+            <ComboBoxItem Content="90%"/>
+            <ComboBoxItem Content="100%"/>
+            <ComboBoxItem Content="110%"/>
+            <ComboBoxItem Content="125%"/>
+            <ComboBoxItem Content="150%"/>
+            <ComboBoxItem Content="200%"/>
+            <ComboBoxItem Content="250%"/>
+            <ComboBoxItem Content="300%"/>
+            <ComboBoxItem Content="400%"/>
+            <ComboBoxItem Content="500%"/>
+          </ComboBox>
+
+          <ComboBox x:Name="GoToLineBox"
+                    Width="70"
+                    Height="22"
+                    Margin="10,0,0,0"
+                    Style="{DynamicResource BoxedComboBoxEditableStyle}"
+                    IsEditable="True"
+                    IsTextSearchEnabled="False"
+                    StaysOpenOnEdit="True"
+                    VerticalAlignment="Center"/>
+
+          <Rectangle Width="1" Height="14" 
+                     Fill="{DynamicResource Brush.Border.Light}" 
+                     Margin="16,0"/>
+
+          <Ellipse Width="6" Height="6" 
+                   Fill="{DynamicResource Brush.Acc.Green}" 
+                   Margin="0,1,8,0"
+                   VerticalAlignment="Center"/>
+
+          <TextBlock x:Name="DiagText"
+                     Text="No issues found"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <TextBlock x:Name="EvalText"
+                   Grid.Column="1"
+                   Text="Eval: Idle"
+                   Foreground="{DynamicResource Brush.Text.Dim}"
+                   FontFamily="Cascadia Mono"
+                   FontSize="11"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+
+        <StackPanel Grid.Column="2" 
+                    Orientation="Horizontal" 
+                    VerticalAlignment="Center">
+
+          <TextBlock x:Name="CaretText"
+                     Text="Ln: 1, Col: 1"
+                     Foreground="{DynamicResource Brush.Text.Main}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     VerticalAlignment="Center"/>
+
+          <TextBlock Text="|"
+                     Foreground="{DynamicResource Brush.Border.Light}"
+                     Margin="12,0"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     VerticalAlignment="Center"/>
+
+          <TextBlock x:Name="SelText"
+                     Text="Sel: 0"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     VerticalAlignment="Center"/>
+
+          <Rectangle Width="1" Height="14"
+                     Fill="{DynamicResource Brush.Border.Light}"
+                     Margin="12,0"
+                     VerticalAlignment="Center"/>
+
+          <ToggleButton x:Name="WrapToggle"
+                        Style="{DynamicResource StripIconToggle}"
+                        IsChecked="True"
+                        ToolTip="Word Wrap"
+                        Content="."
+                        ContentTemplate="{StaticResource Icon.TerminateTemplate}"/>
+        </StackPanel>
+
+      </Grid>
+    </Border>
   </Grid>
 </UserControl>

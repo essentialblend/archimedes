@@ -1,3 +1,5 @@
+<!--Themes/Dark.xaml-->
+
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
@@ -28,6 +30,15 @@
   <SolidColorBrush x:Key="Brush.Editor.CurrentLineBorder" Color="#16FFFFFF"/>
   <Pen x:Key="Pen.Editor.CurrentLineBorder" Brush="{DynamicResource Brush.Editor.CurrentLineBorder}" Thickness="1"/>
 
+  <!-- Syntax (Tidal) Dark+ -->
+  <SolidColorBrush x:Key="Brush.Syntax.Comment"  Color="#6A9955"/>
+  <SolidColorBrush x:Key="Brush.Syntax.String"   Color="#CE9178"/>
+  <SolidColorBrush x:Key="Brush.Syntax.Escape"   Color="#D7BA7D"/>
+  <SolidColorBrush x:Key="Brush.Syntax.Number"   Color="#B5CEA8"/>
+  <SolidColorBrush x:Key="Brush.Syntax.Stream"   Color="#9CDCFE"/>
+  <SolidColorBrush x:Key="Brush.Syntax.Operator" Color="#D4D4D4"/>
+  <SolidColorBrush x:Key="Brush.Syntax.Comma"    Color="#D4D4D4"/>
+
   <!-- Borders -->
   <SolidColorBrush x:Key="Brush.Border"        Color="#000000"/>
   <SolidColorBrush x:Key="Brush.Border.Light"  Color="#2A2A2A"/>
@@ -51,6 +62,11 @@
   <!-- ~rgba(255,255,255,0.04) -->
   <SolidColorBrush x:Key="Brush.Input.BGHover" Color="#14FFFFFF"/>
   <!-- ~rgba(255,255,255,0.08) -->
+
+  <!-- Scrollbars -->
+  <SolidColorBrush x:Key="Brush.Scrollbar.Track" Color="#0AFFFFFF"/>
+  <SolidColorBrush x:Key="Brush.Scrollbar.Thumb" Color="#666666"/>
+  <SolidColorBrush x:Key="Brush.Scrollbar.ThumbHover" Color="#707070"/>
 
   <!-- Theme Toggle Icon (Dark) -->
   <DataTemplate x:Key="ThemeToggleIconTemplate">

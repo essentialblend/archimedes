@@ -8,5 +8,23 @@
   <Geometry x:Key="Icon.DeckHushFill">M5,5 H9 V19 H5 Z M15,5 H19 V19 H15 Z</Geometry>
   <Geometry x:Key="Icon.DeckHushSlash">M4,4 L20,20</Geometry>
   <Geometry x:Key="Icon.ThemeMoon">M21,12.79 A9,9 0 1 1 11.21,3 A7,7 0 0 0 21,12.79 Z</Geometry>
+  <Geometry x:Key="Icon.TerminateOutline">M4,4 H20 V20 H4 Z</Geometry>
+  <Geometry x:Key="Icon.TerminateFill">M9,9 H15 V15 H9 Z</Geometry>
+
+  <DataTemplate x:Key="Icon.TerminateTemplate">
+    <Viewbox Width="16" Height="16" Stretch="Uniform">
+      <Canvas Width="24" Height="24">
+        <Path Data="{StaticResource Icon.TerminateOutline}"
+              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+              StrokeThickness="1.5"
+              StrokeStartLineCap="Square"
+              StrokeEndLineCap="Square"
+              StrokeLineJoin="Miter"
+              Fill="Transparent"/>
+        <Path Data="{StaticResource Icon.TerminateFill}"
+              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"/>
+      </Canvas>
+    </Viewbox>
+  </DataTemplate>
 
 </ResourceDictionary>

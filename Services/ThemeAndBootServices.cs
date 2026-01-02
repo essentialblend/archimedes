@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Services/ThemeAndBootServices.cs
+
+using System;
 using System.Windows;
 
 namespace archimedes

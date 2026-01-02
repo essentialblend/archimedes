@@ -10,10 +10,14 @@
 
   <ItemGroup>
     <None Remove="Assets\Logo.png" />
+    <None Remove="Resources\Syntax\TidalHaskell.xshd" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\Logo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Syntax\TidalHaskell.xshd">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

@@ -1,5 +1,3 @@
-﻿using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace archimedes
@@ -9,6 +7,10 @@ namespace archimedes
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            new ResourceDictionaryThemeToggler().ApplyInitialTheme();
+            base.OnStartup(e);
+        }
     }
-
 }

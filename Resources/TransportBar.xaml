@@ -79,6 +79,50 @@
     </Style.Triggers>
   </Style>
 
+  <Style x:Key="TidalBootButton" TargetType="Button" BasedOn="{StaticResource IconButtonGlow}">
+    <Setter Property="Opacity" Value="0.55"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="UseLayoutRounding" Value="True"/>
+    <Style.Triggers>
+      <Trigger Property="Tag" Value="Booting">
+        <Setter Property="Opacity" Value="0.85"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="10"
+                              ShadowDepth="0"
+                              Opacity="0.2"
+                              Color="{DynamicResource Color.Acc.Main}"/>
+          </Setter.Value>
+        </Setter>
+        <Trigger.EnterActions>
+          <BeginStoryboard x:Name="BootPulse">
+            <Storyboard AutoReverse="True" RepeatBehavior="Forever">
+              <DoubleAnimation Storyboard.TargetProperty="Effect.(DropShadowEffect.Opacity)" Duration="0:0:0.7" From="0.2" To="0.7"/>
+              <DoubleAnimation Storyboard.TargetProperty="Effect.(DropShadowEffect.BlurRadius)" Duration="0:0:0.7" From="8" To="16"/>
+            </Storyboard>
+          </BeginStoryboard>
+        </Trigger.EnterActions>
+        <Trigger.ExitActions>
+          <StopStoryboard BeginStoryboardName="BootPulse"/>
+        </Trigger.ExitActions>
+      </Trigger>
+      <Trigger Property="Tag" Value="Ready">
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Acc.Main}"/>
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="14"
+                              ShadowDepth="0"
+                              Opacity="0.8"
+                              Color="{DynamicResource Color.Acc.Main}"/>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
   <Style x:Key="ScaleComboItem" TargetType="ComboBoxItem">
     <Setter Property="Padding" Value="8,2"/>
     <Setter Property="Background" Value="Transparent"/>

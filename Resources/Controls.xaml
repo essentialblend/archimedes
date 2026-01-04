@@ -228,6 +228,40 @@
     </Setter>
   </Style>
 
+  <Style x:Key="IconButtonGlow" TargetType="Button">
+    <Setter Property="Width" Value="22"/>
+    <Setter Property="Height" Value="22"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+              <Setter Property="Effect">
+                <Setter.Value>
+                  <DropShadowEffect BlurRadius="10"
+                                    ShadowDepth="0"
+                                    Opacity="0.45"
+                                    Color="{DynamicResource Color.Acc.Main}"/>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter Property="Opacity" Value="0.8"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <Style x:Key="BoxedComboBoxEditableStyle" TargetType="ComboBox">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>

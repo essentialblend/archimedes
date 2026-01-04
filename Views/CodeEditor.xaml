@@ -110,14 +110,31 @@
                      VerticalAlignment="Center"/>
         </StackPanel>
 
-        <TextBlock x:Name="EvalText"
-                   Grid.Column="1"
-                   Text="Eval: Idle"
-                   Foreground="{DynamicResource Brush.Text.Dim}"
-                   FontFamily="Cascadia Mono"
-                   FontSize="11"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+        <Grid Grid.Column="1"
+              HorizontalAlignment="Center"
+              Width="260"
+              VerticalAlignment="Center">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <TextBlock Text="Eval:"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     VerticalAlignment="Center"/>
+
+          <TextBlock x:Name="EvalText"
+                     Grid.Column="1"
+                     Text="Idle"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     Margin="6,0,0,0"
+                     TextTrimming="CharacterEllipsis"
+                     VerticalAlignment="Center"/>
+        </Grid>
 
         <StackPanel Grid.Column="2" 
                     Orientation="Horizontal" 

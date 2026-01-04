@@ -173,11 +173,16 @@
 
         <Border Style="{StaticResource RightSep}"/>
 
-        <Button Style="{StaticResource IconButton}" Click="OnBootTidal" ToolTip="Turn Tidal Cycles On" Margin="0,0,24,0">
-          <Image Width="18" Height="18" Stretch="Uniform" Source="/Assets/Logo.png"/>
+        <Button x:Name="BootTidalButton" Style="{StaticResource TidalBootButton}" Tag="Off" Click="OnBootTidal" ToolTip="Turn Tidal Cycles On" Margin="0,0,24,0">
+          <Image Width="20" Height="20"
+                 Stretch="Uniform"
+                 RenderOptions.BitmapScalingMode="HighQuality"
+                 SnapsToDevicePixels="True"
+                 UseLayoutRounding="True"
+                 Source="/Assets/Logo.png"/>
         </Button>
 
-        <Button Style="{StaticResource IconButton}" Click="OnToggleTheme" ToolTip="Toggle Theme" Content="." ContentTemplate="{DynamicResource ThemeToggleIconTemplate}"/>
+        <Button Style="{StaticResource IconButtonGlow}" Click="OnToggleTheme" ToolTip="Toggle Theme" Content="." ContentTemplate="{DynamicResource ThemeToggleIconTemplate}"/>
       </StackPanel>
     </Grid>
   </Border>

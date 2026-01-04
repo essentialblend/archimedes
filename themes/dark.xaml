@@ -49,9 +49,10 @@
   <SolidColorBrush x:Key="Brush.Text.Accent" Color="#E5E5E5"/>
 
   <!-- Accents -->
-  <SolidColorBrush x:Key="Brush.Acc.Main"  Color="#818CF8"/>
+  <Color x:Key="Color.Acc.Main">#818CF8</Color>
+  <SolidColorBrush x:Key="Brush.Acc.Main"  Color="{DynamicResource Color.Acc.Main}"/>
+  <SolidColorBrush x:Key="Brush.Acc.PatternHighlight" Color="#F5F5DC"/>
   <SolidColorBrush x:Key="Brush.Acc.Green" Color="#10B981"/>
-  <SolidColorBrush x:Key="Brush.Acc.Yellow" Color="#E5C14F"/>
   <SolidColorBrush x:Key="Brush.Acc.Red"   Color="#EF4444"/>
   <SolidColorBrush x:Key="Brush.Acc.Flash" Color="#FFFFFF"/>
 
@@ -70,27 +71,43 @@
 
   <!-- Theme Toggle Icon (Dark) -->
   <DataTemplate x:Key="ThemeToggleIconTemplate">
-    <Viewbox Width="18" Height="18" Stretch="Uniform">
-      <Canvas Width="24" Height="24">
-        <Ellipse Width="18" Height="18" Canvas.Left="3" Canvas.Top="3"
-                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                 StrokeThickness="1.5"/>
-        <Line X1="2" Y1="12" X2="22" Y2="12"
-              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-              StrokeThickness="2"/>
-        <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-              Opacity="0.8">
-          <Path.Data>
-            <PathGeometry>
-              <PathFigure StartPoint="3,12" IsClosed="True">
-                <ArcSegment Point="21,12" Size="9,9" SweepDirection="Clockwise" IsLargeArc="False"/>
-              </PathFigure>
-            </PathGeometry>
-          </Path.Data>
-        </Path>
-        <Ellipse Width="3" Height="3" Canvas.Left="10.5" Canvas.Top="5.5" StrokeThickness="0"
-                 Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
-      </Canvas>
-    </Viewbox>
+    <Grid>
+      <Viewbox Width="18" Height="18" Stretch="Uniform" SnapsToDevicePixels="True" UseLayoutRounding="True">
+        <Canvas x:Name="IconRoot" Width="24" Height="24" SnapsToDevicePixels="True" UseLayoutRounding="True">
+          <Path Data="M12,2 V22"
+                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                StrokeThickness="1.5"
+                StrokeStartLineCap="Square"
+                StrokeEndLineCap="Square"/>
+          <Path Data="M2,12 H22"
+                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                StrokeThickness="1.5"
+                StrokeStartLineCap="Square"
+                StrokeEndLineCap="Square"/>
+          <Path Data="M5,5 L19,19"
+                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                StrokeThickness="1.5"
+                StrokeStartLineCap="Square"
+                StrokeEndLineCap="Square"/>
+          <Path Data="M19,5 L5,19"
+                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                StrokeThickness="1.5"
+                StrokeStartLineCap="Square"
+                StrokeEndLineCap="Square"/>
+        </Canvas>
+      </Viewbox>
+    </Grid>
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsMouseOver}" Value="True">
+        <Setter TargetName="IconRoot" Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="10"
+                              ShadowDepth="0"
+                              Opacity="0.45"
+                              Color="{DynamicResource Color.Acc.Main}"/>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

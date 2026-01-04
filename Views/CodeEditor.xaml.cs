@@ -3,15 +3,18 @@
 using archimedes;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using System.Xml;
 
 namespace archimedes.Views
@@ -94,6 +97,7 @@ namespace archimedes.Views
   {
     private readonly CodeEditorThemeApplier _themeApplier = new();
     private readonly EditorSettingsStore _settings = EditorSettingsStore.Load();
+    private readonly EditorBufferStore _bufferStore = new();
     private readonly DiagnosticsUnderlineRenderer _diagnosticRenderer = new();
     private const double TextLeftPadding = 8;
     private const double WrapIndicatorPadding = 14;
@@ -109,6 +113,20 @@ namespace archimedes.Views
     private bool _syncingWrapToggle;
     private bool _pendingChord;
     private bool _syncingGoToLine;
+    private MoveLineInputHandler? _moveLineHandler;
+    private readonly EvalFlashRenderer _evalFlashRenderer = new();
+    private readonly EvalFlashRenderer _patternFlashRenderer = new();
+    private readonly DispatcherTimer _evalFlashTimer = new();
+    private readonly DispatcherTimer _diagnosticTimer = new();
+    private readonly DispatcherTimer _bufferSaveTimer = new();
+    private const int EvalFlashDurationMs = 450;
+    private const int PatternFlashDurationMs = 220;
+    private const int EvalFlashFrameMs = 33;
+    private const int DiagnosticDebounceMs = 350;
+    private const int BufferSaveDebounceMs = 500;
+    private bool _loadingBuffer;
+
+    public event EventHandler<string>? EvalRequested;
 
     public CodeEditor()
     {
@@ -116,6 +134,7 @@ namespace archimedes.Views
       Loaded += OnControlLoaded;
       Unloaded += OnControlUnloaded;
     }
+
 
     private static IHighlightingDefinition LoadTidalHaskellHighlighting()
     {
@@ -130,6 +149,7 @@ namespace archimedes.Views
 
     private void OnEditorLoaded(object sender, RoutedEventArgs e)
     {
+      if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(this)) return;
       WireEditorOnce();
 
       try
@@ -145,11 +165,12 @@ namespace archimedes.Views
       }
 
       ApplyTheme();
+      ApplyWordWrap(_settings.WordWrap, persist: false);
+      SetZoom(GetZoomPctFromComboBox());
+      LoadEditorBuffer();
       UpdateCaretText();
       UpdateSelectionText();
       UpdateGoToLineBox();
-      ApplyWordWrap(_settings.WordWrap, persist: false);
-      SetZoom(GetZoomPctFromComboBox());
       UpdateDiagnostics();
     }
 
@@ -162,13 +183,27 @@ namespace archimedes.Views
       UpdateTextViewMargin(_settings.WordWrap);
       Editor.Options.IndentationSize = 2;
       Editor.Options.ConvertTabsToSpaces = true;
+      Editor.Options.EnableRectangularSelection = true;
       Editor.TextArea.IndentationStrategy = new HaskellIndentationStrategy(Editor.Options);
       WrapIndicator.Editor = Editor;
       WrapIndicator.Enabled = _settings.WordWrap;
       UpdateWrapIndicatorBrush();
       _diagnosticRenderer.Editor = Editor;
       Editor.TextArea.TextView.BackgroundRenderers.Add(_diagnosticRenderer);
+      _patternFlashRenderer.Editor = Editor;
+      _patternFlashRenderer.Duration = TimeSpan.FromMilliseconds(PatternFlashDurationMs);
+      _patternFlashRenderer.BaseAlpha = 200;
+      _patternFlashRenderer.OutlineOnly = true;
+      _patternFlashRenderer.OutlineThickness = 1.0;
+      Editor.TextArea.TextView.BackgroundRenderers.Add(_patternFlashRenderer);
+      _evalFlashRenderer.Editor = Editor;
+      _evalFlashRenderer.Duration = TimeSpan.FromMilliseconds(EvalFlashDurationMs);
+      Editor.TextArea.TextView.BackgroundRenderers.Add(_evalFlashRenderer);
       UpdateDiagnosticsBrush();
+      UpdatePatternFlashBrush();
+      UpdateEvalFlashBrush();
+      _moveLineHandler = new MoveLineInputHandler(Editor.TextArea, MoveLines);
+      Editor.TextArea.PushStackedInputHandler(_moveLineHandler);
 
       ZoomBox.SelectionChanged += OnZoomSelectionChanged;
       WrapToggle.Checked += OnWrapToggleChanged;
@@ -176,6 +211,12 @@ namespace archimedes.Views
       Editor.TextArea.Caret.PositionChanged += OnCaretPositionChanged;
       Editor.TextArea.SelectionChanged += OnSelectionChanged;
       Editor.TextChanged += OnEditorTextChanged;
+      _diagnosticTimer.Interval = TimeSpan.FromMilliseconds(DiagnosticDebounceMs);
+      _diagnosticTimer.Tick += OnDiagnosticTimerTick;
+      _evalFlashTimer.Interval = TimeSpan.FromMilliseconds(EvalFlashFrameMs);
+      _evalFlashTimer.Tick += OnEvalFlashTimerTick;
+      _bufferSaveTimer.Interval = TimeSpan.FromMilliseconds(BufferSaveDebounceMs);
+      _bufferSaveTimer.Tick += OnBufferSaveTimerTick;
       GoToLineBox.PreviewKeyDown += OnGoToLinePreviewKeyDown;
       Editor.PreviewKeyDown += OnEditorPreviewKeyDown;
       Editor.PreviewMouseWheel += OnEditorPreviewMouseWheel;
@@ -185,6 +226,8 @@ namespace archimedes.Views
 
     private void OnEditorPreviewKeyDown(object s, KeyEventArgs e)
     {
+      if (TryHandleHushShortcut(e)) { e.Handled = true; return; }
+      if (TryHandleEvalShortcut(e)) { e.Handled = true; return; }
       if (HandleEditorChord(e)) { e.Handled = true; return; }
       if (_zoomCtrl.TryKey(e, _zoomPct, out var next)) { SetZoom(next); e.Handled = true; }
     }
@@ -216,10 +259,26 @@ namespace archimedes.Views
         Editor.TextArea.Caret.PositionChanged -= OnCaretPositionChanged;
         Editor.TextArea.SelectionChanged -= OnSelectionChanged;
         Editor.TextChanged -= OnEditorTextChanged;
+        _diagnosticTimer.Stop();
+        _diagnosticTimer.Tick -= OnDiagnosticTimerTick;
+        _evalFlashTimer.Stop();
+        _evalFlashTimer.Tick -= OnEvalFlashTimerTick;
+        _bufferSaveTimer.Stop();
+        _bufferSaveTimer.Tick -= OnBufferSaveTimerTick;
+        _bufferStore.Save(Editor.Text);
         GoToLineBox.PreviewKeyDown -= OnGoToLinePreviewKeyDown;
         WrapIndicator.Editor = null;
         Editor.TextArea.TextView.BackgroundRenderers.Remove(_diagnosticRenderer);
         _diagnosticRenderer.Editor = null;
+        Editor.TextArea.TextView.BackgroundRenderers.Remove(_patternFlashRenderer);
+        _patternFlashRenderer.Editor = null;
+        Editor.TextArea.TextView.BackgroundRenderers.Remove(_evalFlashRenderer);
+        _evalFlashRenderer.Editor = null;
+        if (_moveLineHandler is not null)
+        {
+          Editor.TextArea.PopStackedInputHandler(_moveLineHandler);
+          _moveLineHandler = null;
+        }
         _editorWired = false;
       }
     }
@@ -231,6 +290,8 @@ namespace archimedes.Views
       _themeApplier.Apply(Editor, _tidal ?? Editor.SyntaxHighlighting);
       UpdateWrapIndicatorBrush();
       UpdateDiagnosticsBrush();
+      UpdatePatternFlashBrush();
+      UpdateEvalFlashBrush();
     }
 
     private void OnCaretPositionChanged(object? sender, EventArgs e)
@@ -239,6 +300,8 @@ namespace archimedes.Views
       UpdateGoToLineBox();
     }
     private void OnSelectionChanged(object? sender, EventArgs e) => UpdateSelectionText();
+
+    public void SetEvalStatus(string text) => EvalText.Text = text;
 
     private void UpdateCaretText()
     {
@@ -250,15 +313,315 @@ namespace archimedes.Views
       SelText.Text = $"Sel: {Editor.SelectionLength}";
     }
 
+    private bool TryHandleEvalShortcut(KeyEventArgs e)
+    {
+      if (e.Key is not (Key.Enter or Key.Return)) return false;
+
+      var shift = IsShiftDown();
+      var ctrl = IsCtrlDown();
+      var alt = IsAltDown();
+
+      if (shift && !ctrl && !alt)
+      {
+        return TryEvalRegion(GetSelectionOrCurrentLineRegion());
+      }
+
+      if (ctrl && !shift && !alt)
+      {
+        return TryEvalRegion(GetSelectionOrParagraphRegion());
+      }
+
+      return false;
+    }
+
+    private bool TryHandleHushShortcut(KeyEventArgs e)
+    {
+      if (GetEffectiveKey(e) != Key.H) return false;
+
+      var ctrl = IsCtrlDown();
+      var alt = IsAltDown();
+
+      if (ctrl && alt)
+      {
+        RequestEval("hush");
+        return true;
+      }
+
+      return false;
+    }
+
+    private static Key GetEffectiveKey(KeyEventArgs e)
+    {
+      return e.Key == Key.System ? e.SystemKey : e.Key;
+    }
+
+    private static bool IsCtrlDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+    }
+
+    private static bool IsAltDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+    }
+
+    private static bool IsShiftDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+    }
+
+    private sealed class MoveLineInputHandler : TextAreaStackedInputHandler
+    {
+      private readonly Action<int> _moveLines;
+
+      public MoveLineInputHandler(TextArea textArea, Action<int> moveLines) : base(textArea)
+      {
+        _moveLines = moveLines;
+      }
+
+      public override void OnPreviewKeyDown(KeyEventArgs e)
+      {
+        base.OnPreviewKeyDown(e);
+        if (e.Handled) return;
+
+        var mods = Keyboard.Modifiers;
+        if ((mods & ModifierKeys.Alt) == 0) return;
+        if ((mods & (ModifierKeys.Control | ModifierKeys.Shift)) != 0) return;
+
+        var key = e.Key == Key.System ? e.SystemKey : e.Key;
+        if (key == Key.Up) { _moveLines(-1); e.Handled = true; }
+        else if (key == Key.Down) { _moveLines(1); e.Handled = true; }
+      }
+    }
+
+    private bool TryEvalRegion(EvalRegion? region)
+    {
+      if (region is null) return true;
+      var value = region.Value;
+      if (string.IsNullOrWhiteSpace(value.Text)) return true;
+
+      FlashEvalRegion(value);
+      var evalText = value.Text;
+      var doc = Editor.Document;
+      if (doc is not null)
+      {
+        var line = doc.GetLineByOffset(value.Offset);
+        var startLine = line.LineNumber - 1;
+        var startColumn = value.Offset - line.Offset;
+        // Inject deltaContext offsets so Tidal can emit absolute OSC highlights.
+        evalText = ApplyDeltaMini(evalText, startColumn, startLine);
+      }
+      RequestEval(evalText);
+      return true;
+    }
+
+    private void RequestEval(string? code)
+    {
+      if (string.IsNullOrWhiteSpace(code)) return;
+      EvalRequested?.Invoke(this, code);
+    }
+
+    private void MoveLines(int direction)
+    {
+      var doc = Editor.Document;
+      if (doc is null) return;
+
+      var range = GetSelectedLineRange();
+      if (range is null) return;
+
+      var startLine = range.Value.start;
+      var endLine = range.Value.end;
+      var startLineNumber = startLine.LineNumber;
+      var endLineNumber = endLine.LineNumber;
+      if (direction < 0 && startLine.PreviousLine is null) return;
+      if (direction > 0 && endLine.NextLine is null) return;
+
+      var blockStart = startLine.Offset;
+      var blockLength = GetBlockLength(startLine, endLine);
+      var caretColumn = Editor.TextArea.Caret.Column;
+      var hadSelection = Editor.SelectionLength > 0;
+
+      using (doc.RunUpdate())
+      {
+        if (direction < 0)
+        {
+          var prev = startLine.PreviousLine!;
+          var blockText = doc.GetText(blockStart, blockLength);
+          if (endLine.DelimiterLength == 0)
+          {
+            var prevContent = doc.GetText(prev.Offset, prev.Length);
+            var prevDelimiter = doc.GetText(prev.EndOffset, prev.DelimiterLength);
+            doc.Remove(prev.Offset, prev.TotalLength + blockLength);
+            doc.Insert(prev.Offset, blockText + prevDelimiter + prevContent);
+          }
+          else
+          {
+            var prevText = doc.GetText(prev.Offset, prev.TotalLength);
+            doc.Remove(prev.Offset, prev.TotalLength + blockLength);
+            doc.Insert(prev.Offset, blockText + prevText);
+          }
+        }
+        else
+        {
+          var next = endLine.NextLine!;
+          var blockText = doc.GetText(blockStart, blockLength);
+          if (next.DelimiterLength == 0)
+          {
+            var blockDelimiter = doc.GetText(endLine.EndOffset, endLine.DelimiterLength);
+            var blockCore = blockDelimiter.Length > 0 && blockText.Length >= blockDelimiter.Length
+              ? blockText[..^blockDelimiter.Length]
+              : blockText;
+            var nextContent = doc.GetText(next.Offset, next.Length);
+            doc.Remove(blockStart, blockLength + next.Length);
+            doc.Insert(blockStart, nextContent + blockDelimiter + blockCore);
+          }
+          else
+          {
+            var nextText = doc.GetText(next.Offset, next.TotalLength);
+            doc.Remove(blockStart, blockLength + next.TotalLength);
+            doc.Insert(blockStart, nextText + blockText);
+          }
+        }
+      }
+
+      var newStartLine = startLineNumber + direction;
+      var newEndLine = endLineNumber + direction;
+      RestoreSelection(newStartLine, newEndLine, caretColumn, hadSelection);
+    }
+
+    private static int GetBlockLength(DocumentLine start, DocumentLine end)
+    {
+      return end.EndOffset + end.DelimiterLength - start.Offset;
+    }
+
+    private void RestoreSelection(int startLineNumber, int endLineNumber, int caretColumn, bool hadSelection)
+    {
+      var doc = Editor.Document;
+      if (doc is null) return;
+
+      var start = doc.GetLineByNumber(startLineNumber);
+      var end = doc.GetLineByNumber(endLineNumber);
+
+      if (hadSelection)
+      {
+        var length = Math.Max(0, end.EndOffset - start.Offset);
+        Editor.Select(start.Offset, length);
+      }
+
+      var lineLength = end.Length;
+      Editor.TextArea.Caret.Line = startLineNumber;
+      Editor.TextArea.Caret.Column = Math.Max(1, Math.Min(caretColumn, lineLength + 1));
+      Editor.TextArea.Caret.BringCaretToView();
+    }
+
+    private void FlashEvalRegion(EvalRegion region)
+    {
+      var doc = Editor.Document;
+      if (doc is null) return;
+
+      var offset = Math.Clamp(region.Offset, 0, doc.TextLength);
+      var length = Math.Max(0, Math.Min(region.Length, doc.TextLength - offset));
+      if (length <= 0) return;
+
+      _evalFlashRenderer.AddFlash(offset, length);
+      _evalFlashTimer.Start();
+    }
+
+    public void FlashPatternSpan(int startColumn, int startLine, int endColumn, int endLine, TimeSpan? duration = null)
+    {
+      var doc = Editor.Document;
+      if (doc is null) return;
+      if (startLine <= 0 || endLine <= 0) { startLine++; endLine++; }
+
+      startColumn = Math.Max(1, startColumn + 1);
+      endColumn = Math.Max(1, endColumn + 1);
+
+      if (!TryGetOffset(doc, startLine, startColumn, out var startOffset)) return;
+      if (!TryGetOffset(doc, endLine, endColumn, out var endOffset)) return;
+
+      if (startOffset < doc.TextLength && doc.GetCharAt(startOffset) == '"')
+      {
+        if (TryGetOffset(doc, startLine, startColumn + 1, out var shiftedStart))
+          startOffset = shiftedStart;
+      }
+
+      if (endOffset > 0 && endOffset <= doc.TextLength && doc.GetCharAt(endOffset - 1) == '"')
+        endOffset = Math.Max(startOffset + 1, endOffset - 1);
+
+      if (endOffset <= startOffset)
+        endOffset = Math.Min(doc.TextLength, startOffset + 1);
+
+      var length = Math.Max(1, Math.Min(doc.TextLength - startOffset, endOffset - startOffset));
+      if (length <= 0) return;
+
+      _patternFlashRenderer.AddFlash(startOffset, length, duration);
+      _evalFlashTimer.Start();
+    }
+
+    private EvalRegion? GetSelectionOrCurrentLineRegion()
+    {
+      return GetSelectionRegion() ?? GetCurrentLineRegion();
+    }
+
+    private EvalRegion? GetSelectionOrParagraphRegion()
+    {
+      return GetSelectionRegion() ?? GetCurrentParagraphRegion();
+    }
+
+    private EvalRegion? GetSelectionRegion()
+    {
+      if (Editor.SelectionLength == 0) return null;
+      return new EvalRegion(Editor.SelectionStart, Editor.SelectionLength, Editor.SelectedText);
+    }
+
+    private EvalRegion? GetCurrentLineRegion()
+    {
+      var doc = Editor.Document;
+      if (doc is null) return null;
+      var line = doc.GetLineByOffset(Editor.CaretOffset);
+      return new EvalRegion(line.Offset, line.Length, doc.GetText(line));
+    }
+
+    private EvalRegion? GetCurrentParagraphRegion()
+    {
+      var doc = Editor.Document;
+      if (doc is null) return null;
+
+      var caretLine = doc.GetLineByOffset(Editor.CaretOffset);
+      if (IsBlankLine(doc, caretLine)) return null;
+
+      var start = caretLine;
+      while (start.PreviousLine is not null && !IsBlankLine(doc, start.PreviousLine))
+        start = start.PreviousLine;
+
+      var end = caretLine;
+      while (end.NextLine is not null && !IsBlankLine(doc, end.NextLine))
+        end = end.NextLine;
+
+      var startOffset = start.Offset;
+      var endOffset = end.EndOffset;
+      if (endOffset <= startOffset) return null;
+      var length = endOffset - startOffset;
+      return new EvalRegion(startOffset, length, doc.GetText(startOffset, length));
+    }
+
+    private static bool IsBlankLine(TextDocument doc, DocumentLine line)
+    {
+      return string.IsNullOrWhiteSpace(doc.GetText(line));
+    }
+
     private void OnEditorTextChanged(object? sender, EventArgs e)
     {
-      UpdateDiagnostics();
+      ScheduleDiagnostics();
+      ScheduleBufferSave();
       UpdateGoToLineBox();
     }
 
     private bool HandleEditorChord(KeyEventArgs e)
     {
-      var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+      var mods = Keyboard.Modifiers;
+      var shift = (mods & ModifierKeys.Shift) != 0;
+      var ctrl = (mods & ModifierKeys.Control) != 0;
 
       if (!_pendingChord && ctrl && e.Key == Key.G)
       {
@@ -274,7 +637,7 @@ namespace archimedes.Views
         if (e.Key == Key.C) { CommentSelection(); return true; }
         if (e.Key == Key.U) { UncommentSelection(); return true; }
         if (e.Key == Key.D) { FormatSelection(); return true; }
-
+           
         return false;
       }
 
@@ -354,6 +717,48 @@ namespace archimedes.Views
       }
 
       DiagText.Text = issues.Count == 1 ? issues[0].Message : $"{issues.Count} issues found";
+    }
+
+    private void ScheduleDiagnostics()
+    {
+      _diagnosticTimer.Stop();
+      _diagnosticTimer.Start();
+    }
+
+    private void OnDiagnosticTimerTick(object? sender, EventArgs e)
+    {
+      _diagnosticTimer.Stop();
+      UpdateDiagnostics();
+    }
+
+    private void OnBufferSaveTimerTick(object? sender, EventArgs e)
+    {
+      _bufferSaveTimer.Stop();
+      if (_loadingBuffer) return;
+      _bufferStore.Save(Editor.Text);
+    }
+
+    private void ScheduleBufferSave()
+    {
+      if (_loadingBuffer) return;
+      _bufferSaveTimer.Stop();
+      _bufferSaveTimer.Start();
+    }
+
+    private void LoadEditorBuffer()
+    {
+      var text = _bufferStore.Load();
+      if (string.IsNullOrEmpty(text)) return;
+
+      _loadingBuffer = true;
+      try
+      {
+        Editor.Text = text;
+      }
+      finally
+      {
+        _loadingBuffer = false;
+      }
     }
 
     private List<DiagnosticIssue> EvaluateDiagnostics(string text)
@@ -622,6 +1027,101 @@ namespace archimedes.Views
     {
       var brush = Application.Current?.TryFindResource("Brush.Acc.Red") as Brush;
       _diagnosticRenderer.UpdateBrush(brush);
+    }
+
+    private void UpdateEvalFlashBrush()
+    {
+      var brush = Application.Current?.TryFindResource("Brush.Acc.Main") as Brush;
+      _evalFlashRenderer.UpdateBrush(brush);
+    }
+
+    private void UpdatePatternFlashBrush()
+    {
+      var brush = Application.Current?.TryFindResource("Brush.Acc.PatternHighlight") as Brush;
+      _patternFlashRenderer.UpdateBrush(brush);
+    }
+
+    private void OnEvalFlashTimerTick(object? sender, EventArgs e)
+    {
+      var evalActive = _evalFlashRenderer.PruneExpired();
+      var patternActive = _patternFlashRenderer.PruneExpired();
+      if (!evalActive && !patternActive)
+        _evalFlashTimer.Stop();
+    }
+
+    private static bool TryGetOffset(TextDocument doc, int line, int column, out int offset)
+    {
+      offset = 0;
+      if (doc.LineCount == 0) return false;
+
+      line = Math.Max(1, Math.Min(line, doc.LineCount));
+      var docLine = doc.GetLineByNumber(line);
+      column = Math.Max(1, Math.Min(column, docLine.Length + 1));
+      offset = docLine.Offset + column - 1;
+      return true;
+    }
+
+
+    private static string ApplyDeltaMini(string code, int startColumn, int startLine)
+    {
+      if (string.IsNullOrEmpty(code)) return code;
+      code = code.Replace("\r\n", "\n").Replace("\r", "\n");
+      var sb = new StringBuilder(code.Length + 32);
+
+      var column = Math.Max(0, startColumn);
+      var line = Math.Max(0, startLine);
+      var i = 0;
+
+      while (i < code.Length)
+      {
+        var c = code[i];
+        if (c == '"')
+        {
+          sb.Append("(deltaContext ").Append(column).Append(' ').Append(line).Append(" \"");
+          i++;
+          column++;
+
+          while (i < code.Length)
+          {
+            c = code[i];
+            if (c == '"')
+            {
+              sb.Append('"').Append(')');
+              i++;
+              column++;
+              break;
+            }
+
+            sb.Append(c);
+            if (c == '\n') { line++; column = 0; }
+            else { column++; }
+            i++;
+          }
+
+          continue;
+        }
+
+        sb.Append(c);
+        if (c == '\n') { line++; column = 0; }
+        else { column++; }
+        i++;
+      }
+
+      return sb.ToString();
+    }
+
+    private readonly struct EvalRegion
+    {
+      public EvalRegion(int offset, int length, string text)
+      {
+        Offset = offset;
+        Length = length;
+        Text = text;
+      }
+
+      public int Offset { get; }
+      public int Length { get; }
+      public string Text { get; }
     }
 
     private TextBox? GetGoToLineTextBox()

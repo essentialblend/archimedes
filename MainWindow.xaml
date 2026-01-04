@@ -16,7 +16,7 @@
     </Grid.RowDefinitions>
 
     <!-- Row 0: TRANSPORT BAR -->
-    <views:TransportBar Grid.Row="0"/>
+    <views:TransportBar x:Name="TransportBar" Grid.Row="0"/>
 
     <!-- ROW 1: WORKSPACE -->
     <Border Grid.Row="1" Background="{DynamicResource Brush.BG.Panel}">

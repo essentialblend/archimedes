@@ -52,11 +52,21 @@
   <Color x:Key="Color.Acc.Main">#818CF8</Color>
   <SolidColorBrush x:Key="Brush.Acc.Main"  Color="{DynamicResource Color.Acc.Main}"/>
   <SolidColorBrush x:Key="Brush.Acc.PatternHighlight" Color="#F5F5DC"/>
+  <SolidColorBrush x:Key="Brush.Acc.Vfx" Color="#4CC9F0"/>
   <SolidColorBrush x:Key="Brush.Acc.Green" Color="#10B981"/>
   <SolidColorBrush x:Key="Brush.Acc.Red"   Color="#EF4444"/>
   <SolidColorBrush x:Key="Brush.Acc.Flash" Color="#FFFFFF"/>
 
   <SolidColorBrush x:Key="Brush.CycleBtn.BG" Color="#14818CF8"/>
+
+  <!-- Completion -->
+  <SolidColorBrush x:Key="Brush.Completion.Highlight" Color="#28324A"/>
+  <SolidColorBrush x:Key="Brush.Completion.HighlightText" Color="#E6E6E6"/>
+  <SolidColorBrush x:Key="Brush.Completion.Panel" Color="#161616"/>
+  <SolidColorBrush x:Key="Brush.Completion.PanelBorder" Color="#2F2F2F"/>
+  <SolidColorBrush x:Key="Brush.Completion.PanelSection" Color="#121212"/>
+  <SolidColorBrush x:Key="Brush.Completion.PanelChip" Color="#1C1C1C"/>
+  <SolidColorBrush x:Key="Brush.Completion.PanelChipBorder" Color="#333333"/>
 
   <!-- Inputs -->
   <SolidColorBrush x:Key="Brush.Input.BG"      Color="#0AFFFFFF"/>

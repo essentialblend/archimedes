@@ -3,17 +3,24 @@
 using archimedes.Services.Tidal;
 using archimedes.Views;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace archimedes
 {
   public partial class MainWindow : Window
   {
+    private readonly Stopwatch _hushThrottle = Stopwatch.StartNew();
+    private const int HushThrottleMs = 200;
+    private const int WmKeyDown = 0x0100;
+    private const int WmSysKeyDown = 0x0104;
     private readonly ResourceDictionaryThemeToggler _themeToggler = new();
     private readonly ISuperColliderBootService _scBoot = new SuperColliderBootService();
     private readonly ITidalReplService _tidal = new TidalReplService();
@@ -33,6 +40,7 @@ namespace archimedes
     public MainWindow()
     {
       InitializeComponent();
+      ComponentDispatcher.ThreadPreprocessMessage += OnThreadPreprocessMessage;
       CodeEditor.EvalRequested += OnEvalRequested;
 
       // Give TransportBar access to the service
@@ -62,12 +70,59 @@ namespace archimedes
 
       Closed += async (_, __) =>
       {
+        ComponentDispatcher.ThreadPreprocessMessage -= OnThreadPreprocessMessage;
         await StopServicesAsync(updateStatus: false);
         _oscContext.Dispose();
         _tidal.Dispose();
         _scBoot.Dispose();
       };
     }
+
+    private void ExecuteHush()
+    {
+      if (_hushThrottle.ElapsedMilliseconds < HushThrottleMs) return;
+      _hushThrottle.Restart();
+      OnEvalRequested(this, "hush");
+    }
+
+    private static bool IsCtrlDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+    }
+
+    private static bool IsAltDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+    }
+
+    private static bool IsShiftDown()
+    {
+      return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+    }
+
+    private void OnThreadPreprocessMessage(ref MSG msg, ref bool handled)
+    {
+      if (handled) return;
+      if (msg.message != WmKeyDown && msg.message != WmSysKeyDown) return;
+
+      var key = KeyInterop.KeyFromVirtualKey((int)msg.wParam);
+      if (key != Key.H) return;
+
+      if (!IsCtrlDown()) return;
+      if (IsAltDown() || IsShiftDown()) return;
+      if (Keyboard.IsKeyDown(Key.LWin) || Keyboard.IsKeyDown(Key.RWin)) return;
+
+      try
+      {
+        ExecuteHush();
+        handled = true;
+      }
+      catch (Exception ex)
+      {
+        ReportStatusError(SourceTidal, "Hush failed: " + ex.Message, "Hush failed (see log)");
+      }
+    }
+
 
     private bool IsTidalReady => _scBoot.IsReady && _tidal.IsReady;
     private bool IsAnyTidalRunning => _scBoot.IsRunning || _tidal.IsRunning;
@@ -206,6 +261,7 @@ namespace archimedes
       {
         var span = e.Span;
         RunOnUi(() => CodeEditor.FlashPatternSpan(span.StartColumn, span.StartLine, span.EndColumn, span.EndLine, e.Duration));
+        RunOnUi(() => PerfVfxPanel.OnTidalPulse(e.Ident, span.StartLine, span.StartColumn, e.Delta));
       }
       catch (Exception ex)
       {

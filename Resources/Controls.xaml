@@ -9,6 +9,204 @@
     <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
   </Style>
 
+  <DataTemplate x:Key="CompletionDetailTemplate">
+    <Border Background="{DynamicResource Brush.Completion.Panel}"
+            BorderBrush="{DynamicResource Brush.Completion.PanelBorder}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12"
+            Width="620"
+            Height="320"
+            SnapsToDevicePixels="True"
+            ClipToBounds="True">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <TextBlock Text="{Binding Name}"
+                     Foreground="{DynamicResource Brush.Text.Main}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="13"
+                     FontWeight="SemiBold"
+                     TextTrimming="CharacterEllipsis"/>
+
+          <Border Grid.Column="1"
+                  Background="{DynamicResource Brush.Completion.PanelChip}"
+                  BorderBrush="{DynamicResource Brush.Completion.PanelChipBorder}"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  Padding="6,2"
+                  Margin="8,0,0,0">
+            <TextBlock Text="{Binding Kind}"
+                       Foreground="{DynamicResource Brush.Text.Dim}"
+                       FontSize="10"/>
+          </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="1"
+                   Foreground="{DynamicResource Brush.Text.Dim}"
+                   FontSize="11"
+                   Margin="0,4,0,8">
+          <Run Text="Module: "/>
+          <Run Text="{Binding Module, Mode=OneWay}"/>
+        </TextBlock>
+
+        <Border Grid.Row="2"
+                Height="1"
+                Background="{DynamicResource Brush.Completion.PanelBorder}"
+                Margin="0,0,0,8"/>
+
+        <StackPanel Grid.Row="3">
+          <StackPanel.Style>
+            <Style TargetType="StackPanel">
+              <Setter Property="Visibility" Value="Visible"/>
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding HasSignature}" Value="False">
+                  <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </StackPanel.Style>
+          <TextBlock Text="{Binding SignatureLabel}"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontSize="11"
+                     Margin="0,0,0,2"/>
+
+          <TextBlock Text="{Binding SignatureText}"
+                     Foreground="{DynamicResource Brush.Text.Main}"
+                     FontFamily="Cascadia Mono"
+                     FontSize="11"
+                     TextWrapping="NoWrap"
+                     TextTrimming="CharacterEllipsis"
+                     MaxHeight="20"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4"
+                    Margin="0,8,0,0">
+          <TextBlock Text="Description"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontSize="11"
+                     Margin="0,0,0,2"/>
+
+          <TextBlock Text="{Binding SummaryDescription, Mode=OneWay}"
+                     TextWrapping="Wrap"
+                     TextTrimming="CharacterEllipsis"
+                     Foreground="{DynamicResource Brush.Text.Main}"
+                     LineHeight="16"
+                     MaxHeight="48">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Visible"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding HasDescription}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+
+          <TextBlock Text="{Binding SummaryDescription, Mode=OneWay}"
+                     TextWrapping="Wrap"
+                     TextTrimming="CharacterEllipsis"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontStyle="Italic"
+                     LineHeight="16"
+                     MaxHeight="32"
+                     Margin="0,0,0,4">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding HasDescription}" Value="False">
+                    <Setter Property="Visibility" Value="Visible"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+
+          <TextBlock Text="Example"
+                     Foreground="{DynamicResource Brush.Text.Dim}"
+                     FontSize="11"
+                     Margin="0,6,0,2">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Visible"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding HasSummaryExample}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+
+          <Border Background="{DynamicResource Brush.Completion.PanelSection}"
+                  BorderBrush="{DynamicResource Brush.Completion.PanelChipBorder}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="8"
+                  Margin="0,0,0,6">
+            <Border.Style>
+              <Style TargetType="Border">
+                <Setter Property="Visibility" Value="Visible"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding HasSummaryExample}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <StackPanel>
+              <TextBlock TextWrapping="Wrap"
+                         TextTrimming="CharacterEllipsis"
+                         Foreground="{DynamicResource Brush.Text.Main}"
+                         FontFamily="Cascadia Mono"
+                         FontSize="11"
+                         LineHeight="16"
+                         MaxHeight="32">
+                <Run Text="> " Foreground="{DynamicResource Brush.Text.Dim}"/>
+                <Run Text="{Binding SummaryExampleCode, Mode=OneWay}"/>
+              </TextBlock>
+
+              <TextBlock Text="{Binding SummaryExampleNote, Mode=OneWay}"
+                         TextWrapping="Wrap"
+                         TextTrimming="CharacterEllipsis"
+                         Foreground="{DynamicResource Brush.Text.Dim}"
+                         FontSize="11"
+                         LineHeight="16"
+                         MaxHeight="32"
+                         Margin="0,4,0,0">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding SummaryExampleNote}" Value="">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </Border>
+  </DataTemplate>
+
   <Style x:Key="TinyButton" TargetType="Button">
     <Setter Property="Height" Value="{DynamicResource Dim.WidgetHeight}"/>
     <Setter Property="MinWidth" Value="22"/>
@@ -231,15 +429,28 @@
   <Style x:Key="IconButtonGlow" TargetType="Button">
     <Setter Property="Width" Value="22"/>
     <Setter Property="Height" Value="22"/>
+    <Setter Property="Padding" Value="0"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Dim}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <Border x:Name="Bd"
+                  Width="{TemplateBinding Width}"
+                  Height="{TemplateBinding Height}"
+                  Background="{TemplateBinding Background}"
+                  SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+          </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.BG.Hover}"/>
               <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
               <Setter Property="Effect">
                 <Setter.Value>

@@ -16,6 +16,119 @@
       <Setter Property="CurrentLineBorder" Value="{DynamicResource Pen.Editor.CurrentLineBorder}"/>
       <Setter Property="CurrentLineBackground" Value="{DynamicResource Brush.Editor.CurrentLine}"/>
     </Style>
+
+    <Style x:Key="CompletionListBoxStyle" TargetType="ListBox">
+      <Style.Resources>
+        <Style x:Key="CompletionScrollThumb" TargetType="{x:Type Thumb}">
+          <Setter Property="Background" Value="{DynamicResource Brush.Scrollbar.Thumb}"/>
+          <Setter Property="Opacity" Value="0.45"/>
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="{x:Type Thumb}">
+                <Border x:Name="ThumbBd"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="2"/>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="ThumbBd" Property="Background" Value="{DynamicResource Brush.Scrollbar.ThumbHover}"/>
+                    <Setter Property="Opacity" Value="0.8"/>
+                  </Trigger>
+                  <Trigger Property="IsDragging" Value="True">
+                    <Setter TargetName="ThumbBd" Property="Background" Value="{DynamicResource Brush.Scrollbar.ThumbHover}"/>
+                    <Setter Property="Opacity" Value="0.95"/>
+                  </Trigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+        <Style TargetType="{x:Type ScrollBar}">
+          <Setter Property="Width" Value="2"/>
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+          <Setter Property="Opacity" Value="0.6"/>
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="{x:Type ScrollBar}">
+                <Grid Background="Transparent"
+                      SnapsToDevicePixels="True"
+                      ClipToBounds="True"
+                      Margin="0,6,4,6">
+                  <Track x:Name="PART_Track" IsDirectionReversed="True">
+                    <Track.DecreaseRepeatButton>
+                      <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Focusable="False"/>
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                      <Thumb Style="{StaticResource CompletionScrollThumb}"/>
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                      <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Focusable="False"/>
+                    </Track.IncreaseRepeatButton>
+                  </Track>
+                </Grid>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Height" Value="2"/>
+                    <Setter Property="Margin" Value="6,0,6,4"/>
+                  </Trigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </Style.Resources>
+      <Setter Property="Background" Value="{DynamicResource Brush.Completion.Panel}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource Brush.Completion.PanelBorder}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="6,4,6,4"/>
+      <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+      <Setter Property="FontFamily" Value="Cascadia Mono"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="UseLayoutRounding" Value="True"/>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+      <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+      <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+    </Style>
+
+    <Style x:Key="CompletionListItemStyle" TargetType="ListBoxItem">
+      <Setter Property="Padding" Value="6,2"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="MinHeight" Value="20"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Main}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Style.Triggers>
+        <Trigger Property="IsSelected" Value="True">
+          <Setter Property="Background" Value="{DynamicResource Brush.Completion.Highlight}"/>
+          <Setter Property="Foreground" Value="{DynamicResource Brush.Completion.HighlightText}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <DataTemplate x:Key="CompletionItemTemplate">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Name}"
+                   TextTrimming="CharacterEllipsis"/>
+        <TextBlock Grid.Column="1"
+                   Text="{Binding Kind}"
+                   Foreground="{DynamicResource Brush.Text.Dim}"
+                   Margin="12,0,0,0"/>
+      </Grid>
+    </DataTemplate>
+
   </UserControl.Resources>
 
   <Grid Background="{DynamicResource Brush.Editor.BG}">
@@ -178,3 +291,4 @@
     </Border>
   </Grid>
 </UserControl>
+

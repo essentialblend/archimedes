@@ -1,0 +1,54 @@
+<UserControl x:Class="archimedes.Views.PerfVfxPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="360">
+  <Border Background="{DynamicResource Brush.BG.Panel}"
+          BorderBrush="{DynamicResource Brush.Border.Light}"
+          BorderThickness="1"
+          CornerRadius="8"
+          SnapsToDevicePixels="True"
+          UseLayoutRounding="True"
+          ClipToBounds="True">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="28"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <Border Grid.Row="0"
+              Background="{DynamicResource Brush.BG.Bar}"
+              Padding="8,4">
+        <TextBlock Text="VFX"
+                   Foreground="{DynamicResource Brush.Text.Dim}"
+                   FontFamily="Cascadia Mono"
+                   FontSize="11"
+                   VerticalAlignment="Center"/>
+      </Border>
+
+      <Grid Grid.Row="1" Background="{DynamicResource Brush.BG.Panel}">
+        <Border Margin="8"
+                Background="{DynamicResource Brush.BG.Body}"
+                BorderBrush="{DynamicResource Brush.Border.Light}"
+                BorderThickness="1"
+                CornerRadius="6"
+                SnapsToDevicePixels="True">
+          <Grid>
+            <Rectangle Margin="6"
+                       RadiusX="4"
+                       RadiusY="4"
+                       Fill="Transparent"
+                       Stroke="{DynamicResource Brush.Acc.Vfx}"
+                       StrokeThickness="1"
+                       Opacity="0.25"/>
+            <TextBlock Text="VFX PREVIEW"
+                       Foreground="{DynamicResource Brush.Text.Dim}"
+                       FontFamily="Cascadia Mono"
+                       FontSize="11"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+          </Grid>
+        </Border>
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>
